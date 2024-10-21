@@ -1,0 +1,134 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/www/public:/var/www/public
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - php53
+      - php7x
+      - php8x
+    logging:
+      driver: journald
+      options:
+        tag: "nginx"
+        mode: non-blocking
+        max-buffer-size: "4m"
+        syslog-level: "error"
+    networks:
+      - web
+      - backend
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - /var/www/private/postgre:/var/lib/postgresql/data
+    logging:
+      driver: journald
+      options:
+        tag: "postgres"
+        mode: non-blocking
+        max-buffer-size: "4m"
+        syslog-level: "error"
+    networks:
+      - backend
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MARIADB_DATABASE}
+      MYSQL_USER: ${MARIADB_USER}
+      MYSQL_PASSWORD: ${MARIADB_PASSWORD}
+    volumes:
+      - /var/www/private/mariadb:/var/lib/mysql
+    logging:
+      driver: journald
+      options:
+        tag: "mariadb"
+        mode: non-blocking
+        max-buffer-size: "4m"
+        syslog-level: "error"
+    networks:
+      - backend
+
+  php53:
+    image: satyadeep/php-53-fpm-alpine-3.4-with-ext
+    container_name: php53
+    volumes:
+      - /var/www/public:/var/www/public
+    logging:
+      driver: journald
+      options:
+        tag: "php53"
+        mode: non-blocking
+        max-buffer-size: "4m"
+        syslog-level: "error"
+    networks:
+      - backend
+
+  php73:
+    image: satyadeep/php-73-fpm-alpine-3.9-with-ext
+    container_name: php73
+    volumes:
+      - /var/www/public:/var/www/public
+    logging:
+      driver: journald
+      options:
+        tag: "php73"
+        mode: non-blocking
+        max-buffer-size: "4m"
+        syslog-level: "error"
+    networks:
+      - backend
+
+  php81:
+    image: satyadeep/php-81-fpm-alpine-with-ext
+    container_name: php81
+    volumes:
+      - /var/www/public:/var/www/public
+    logging:
+      driver: journald
+      options:
+        tag: "php81"
+        mode: non-blocking
+        max-buffer-size: "4m"
+        syslog-level: "error"
+    networks:
+      - backend
+
+  letsencrypt:
+    image: certbot/certbot
+    container_name: letsencrypt
+    volumes:
+      - ./nginx/ssl:/etc/letsencrypt
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'
+    logging:
+      driver: journald
+      options:
+        tag: "letsencrypt"
+        mode: non-blocking
+        max-buffer-size: "4m"
+        syslog-level: "error"
+    networks:
+      - web
+
+networks:
+  web:
+    driver: bridge
+  backend:
+    driver: bridge
