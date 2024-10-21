@@ -121,14 +121,16 @@ services:
   # Let's Encrypt for SSL Certificate Management
   certbot:
     build:
-      context: ./letsencrypt  # Path to the directory containing the Dockerfile-certbot
-      dockerfile: Dockerfile  # Use the custom Dockerfile
+      context: ./letsencrypt  # Path to the directory containing Dockerfile
+      dockerfile: Dockerfile  # Custom Dockerfile for Certbot
     container_name: letsencrypt
     volumes:
       - /var/www/private/docker/nginx/ssl:/etc/letsencrypt  # SSL certificates
       - /var/www/private/docker/nginx/logs:/var/log/letsencrypt  # Certbot logs
       - /var/www/public:/var/www/public  # Webroot for validation if needed
-    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'
+      - /var/www/private/docker/nginx/conf.d:/etc/nginx/conf.d  # Mount Nginx virtual host configs
+      - /var/www/private/docker/nginx/nginx.conf:/etc/nginx/nginx.conf  # Mount main nginx.conf
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --deploy-hook "/scripts/reload-nginx.sh"; sleep 12h & wait $${!}; done;'
     logging:
       driver: journald
       options:
