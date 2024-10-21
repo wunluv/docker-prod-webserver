@@ -119,13 +119,16 @@ services:
       - backend  # Only accessible within the backend network
 
   # Let's Encrypt for SSL Certificate Management
-  letsencrypt:
-    image: certbot/certbot  # Using Certbot for Let's Encrypt SSL certificates
-    container_name: letsencrypt  # Static name for the Let's Encrypt container
-    restart: unless-stopped  # Restart policy
+  certbot:
+    build:
+      context: ./letsencrypt  # Path to the directory containing the Dockerfile-certbot
+      dockerfile: Dockerfile-certbot  # Use the custom Dockerfile
+    container_name: letsencrypt
     volumes:
-      - ./nginx/ssl:/etc/letsencrypt  # Certificates are stored here and shared with Nginx
-    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'  # Auto-renew SSL certificates every 12 hours
+      - /var/www/private/docker/nginx/ssl:/etc/letsencrypt  # SSL certificates
+      - /var/www/private/docker/nginx/logs:/var/log/letsencrypt  # Certbot logs
+      - /var/www/public:/var/www/public  # Webroot for validation if needed
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'
     logging:
       driver: journald
       options:
@@ -133,7 +136,8 @@ services:
         mode: non-blocking
         max-buffer-size: "4m"
     networks:
-      - web  # Accessible from the web network for SSL certificate validation
+      - web
+    restart: unless-stopped
 
 
 # Networks Definition
