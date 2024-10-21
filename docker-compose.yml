@@ -14,8 +14,8 @@ services:
       - ./nginx/logs:/var/log/ngin  x  # Nginx logs (access/error)
     depends_on:
       - php53  # Ensure the PHP 5.3 container starts before Nginx
-      - php7x  # Ensure the PHP 7.x container starts before Nginx
-      - php8x  # Ensure the PHP 8.x container starts before Nginx
+      - php73  # Ensure the PHP 7.x container starts before Nginx
+      - php83  # Ensure the PHP 8.x container starts before Nginx
     logging:
       driver: journald  # Use systemd's journald for logging
       options:
