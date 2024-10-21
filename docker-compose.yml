@@ -1,61 +1,64 @@
-version: '3.8'
+version: '3.8' # Defining the version of the Docker Compose file
 
 services:
+  # Nginx Service for routing requests to different websites/applications
   nginx:
-    image: nginx:alpine
-    container_name: nginx
+    image: nginx:alpine  # Using a lightweight version of Nginx
+    container_name: nginx  # Giving the container a static name
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80"   # Exposing HTTP port
+      - "443:443" # Exposing HTTPS port
     volumes:
-      - /var/www/public:/var/www/public
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
-      - ./nginx/logs:/var/log/nginx
+      - /var/www/public:/var/www/public  # Mount the public directory where web apps are hosted
+      - ./nginx/conf.d:/etc/nginx/conf.d  # Nginx config files for virtual hosts/domains
+      - ./nginx/ssl:/etc/nginx/ssl  # SSL certificates for encrypted traffic (LetsEncrypt will store certs here)
+      - ./nginx/logs:/var/log/nginx  # Nginx logs (access/error)
     depends_on:
-      - php53
-      - php7x
-      - php8x
+      - php53  # Ensure the PHP 5.3 container starts before Nginx
+      - php7x  # Ensure the PHP 7.x container starts before Nginx
+      - php8x  # Ensure the PHP 8.x container starts before Nginx
     logging:
-      driver: journald
+      driver: journald  # Use systemd's journald for logging
       options:
-        tag: "nginx"
-        mode: non-blocking
-        max-buffer-size: "4m"
-        syslog-level: "error"
+        tag: "nginx"  # Tag the logs to easily identify them
+        mode: non-blocking  # Prevent the container from blocking if logging fails
+        max-buffer-size: "4m"  # Set a buffer size limit for log entries
+        syslog-level: "error"  # Only log error-level messages
     networks:
-      - web
-      - backend
+      - web  # Public-facing network for handling web traffic
+      - backend  # Backend network to connect with PHP services
 
+  # PostgreSQL Database Service
   postgres:
-    image: postgres:latest
-    container_name: postgres
+    image: postgres:latest  # Latest version of PostgreSQL
+    container_name: postgres  # Static name for the Postgres container
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}  # Username stored in .env file
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Password stored in .env file
+      POSTGRES_DB: ${POSTGRES_DB}  # Database name stored in .env file
     volumes:
-      - /var/www/private/postgre:/var/lib/postgresql/data
+      - /var/www/private/postgre:/var/lib/postgresql/data  # Persistent data storage for the Postgres database
     logging:
       driver: journald
       options:
-        tag: "postgres"
+        tag: "postgres"  # Tag logs for easy identification
         mode: non-blocking
         max-buffer-size: "4m"
         syslog-level: "error"
     networks:
-      - backend
+      - backend  # Database should only be accessible from the backend network
 
+  # MariaDB Database Service (alternative to MySQL)
   mariadb:
-    image: mariadb:latest
-    container_name: mariadb
+    image: mariadb:latest  # Latest version of MariaDB
+    container_name: mariadb  # Static name for the MariaDB container
     environment:
-      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MARIADB_DATABASE}
-      MYSQL_USER: ${MARIADB_USER}
-      MYSQL_PASSWORD: ${MARIADB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}  # Root password stored in .env
+      MYSQL_DATABASE: ${MARIADB_DATABASE}  # Initial database stored in .env
+      MYSQL_USER: ${MARIADB_USER}  # Non-root user stored in .env
+      MYSQL_PASSWORD: ${MARIADB_PASSWORD}  # Password for non-root user stored in .env
     volumes:
-      - /var/www/private/mariadb:/var/lib/mysql
+      - /var/www/private/mariadb:/var/lib/mysql  # Persistent data storage for MariaDB
     logging:
       driver: journald
       options:
@@ -64,13 +67,14 @@ services:
         max-buffer-size: "4m"
         syslog-level: "error"
     networks:
-      - backend
+      - backend  # Should only be accessible from backend services
 
+  # PHP 5.3 FPM Service
   php53:
-    image: satyadeep/php-53-fpm-alpine-3.4-with-ext
-    container_name: php53
+    image: satyadeep/php-53-fpm-alpine-3.4-with-ext  # PHP 5.3 FPM with necessary extensions
+    container_name: php53  # Static name for the PHP 5.3 container
     volumes:
-      - /var/www/public:/var/www/public
+      - /var/www/public:/var/www/public  # Mount public directory to serve PHP applications
     logging:
       driver: journald
       options:
@@ -79,13 +83,14 @@ services:
         max-buffer-size: "4m"
         syslog-level: "error"
     networks:
-      - backend
+      - backend  # Only accessible within the backend network (used by Nginx)
 
+  # PHP 7.3 FPM Service
   php73:
-    image: satyadeep/php-73-fpm-alpine-3.9-with-ext
-    container_name: php73
+    image: satyadeep/php-73-fpm-alpine-3.9-with-ext  # PHP 7.3 FPM with necessary extensions
+    container_name: php73  # Static name for the PHP 7.3 container
     volumes:
-      - /var/www/public:/var/www/public
+      - /var/www/public:/var/www/public  # Same mount point for PHP application files
     logging:
       driver: journald
       options:
@@ -94,13 +99,14 @@ services:
         max-buffer-size: "4m"
         syslog-level: "error"
     networks:
-      - backend
+      - backend  # Only accessible within the backend network
 
+  # PHP 8.1 FPM Service
   php81:
-    image: satyadeep/php-81-fpm-alpine-with-ext
-    container_name: php81
+    image: satyadeep/php-81-fpm-alpine-with-ext  # PHP 8.1 FPM with necessary extensions
+    container_name: php81  # Static name for the PHP 8.1 container
     volumes:
-      - /var/www/public:/var/www/public
+      - /var/www/public:/var/www/public  # Same mount point for PHP application files
     logging:
       driver: journald
       options:
@@ -109,14 +115,15 @@ services:
         max-buffer-size: "4m"
         syslog-level: "error"
     networks:
-      - backend
+      - backend  # Only accessible within the backend network
 
+  # Let's Encrypt for SSL Certificate Management
   letsencrypt:
-    image: certbot/certbot
-    container_name: letsencrypt
+    image: certbot/certbot  # Using Certbot for Let's Encrypt SSL certificates
+    container_name: letsencrypt  # Static name for the Let's Encrypt container
     volumes:
-      - ./nginx/ssl:/etc/letsencrypt
-    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'
+      - ./nginx/ssl:/etc/letsencrypt  # Certificates are stored here and shared with Nginx
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'  # Auto-renew SSL certificates every 12 hours
     logging:
       driver: journald
       options:
@@ -125,10 +132,11 @@ services:
         max-buffer-size: "4m"
         syslog-level: "error"
     networks:
-      - web
+      - web  # Accessible from the web network for SSL certificate validation
 
+# Networks Definition
 networks:
   web:
-    driver: bridge
+    driver: bridge  # Public-facing network for web traffic
   backend:
-    driver: bridge
+    driver: bridge  # Private network for backend communication (PHP, databases)
