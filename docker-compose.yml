@@ -27,6 +27,7 @@ services:
     networks:
       - web  # Public-facing network for handling web traffic
       - backend  # Backend network to connect with PHP services
+     restart: unless-stopped  # Restart policy
 
   # PostgreSQL Database Service
   postgres:
@@ -47,6 +48,7 @@ services:
         syslog-level: "error"
     networks:
       - backend  # Database should only be accessible from the backend network
+    restart: unless-stopped  # Restart policy
 
   # MariaDB Database Service (alternative to MySQL)
   mariadb:
@@ -68,7 +70,8 @@ services:
         syslog-level: "error"
     networks:
       - backend  # Should only be accessible from backend services
-
+    restart: unless-stopped  # Restart policy
+ 
   # PHP 5.3 FPM Service
   php53:
     image: satyadeep/php-53-fpm-alpine-3.4-with-ext  # PHP 5.3 FPM with necessary extensions
@@ -84,6 +87,7 @@ services:
         syslog-level: "error"
     networks:
       - backend  # Only accessible within the backend network (used by Nginx)
+    restart: unless-stopped  # Restart policy
 
   # PHP 7.3 FPM Service
   php73:
@@ -100,6 +104,7 @@ services:
         syslog-level: "error"
     networks:
       - backend  # Only accessible within the backend network
+    restart: unless-stopped  # Restart policy
 
   # PHP 8.1 FPM Service
   php81:
@@ -116,6 +121,7 @@ services:
         syslog-level: "error"
     networks:
       - backend  # Only accessible within the backend network
+    restart: unless-stopped  # Restart policy
 
   # Let's Encrypt for SSL Certificate Management
   letsencrypt:
@@ -133,6 +139,7 @@ services:
         syslog-level: "error"
     networks:
       - web  # Accessible from the web network for SSL certificate validation
+    restart: unless-stopped  # Restart policy
 
 # Networks Definition
 networks:
