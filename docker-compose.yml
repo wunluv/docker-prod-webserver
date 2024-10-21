@@ -22,7 +22,6 @@ services:
         tag: "nginx"  # Tag the logs to easily identify them
         mode: non-blocking  # Prevent the container from blocking if logging fails
         max-buffer-size: "4m"  # Set a buffer size limit for log entries
-        syslog-level: "error"  # Only log error-level messages
     networks:
       - web  # Public-facing network for handling web traffic
       - backend  # Backend network to connect with PHP services
@@ -44,7 +43,6 @@ services:
         tag: "postgres"  # Tag logs for easy identification
         mode: non-blocking
         max-buffer-size: "4m"
-        syslog-level: "error"
     networks:
       - backend  # Database should only be accessible from the backend network
 
@@ -66,7 +64,6 @@ services:
         tag: "mariadb"
         mode: non-blocking
         max-buffer-size: "4m"
-        syslog-level: "error"
     networks:
       - backend  # Should only be accessible from backend services
 
@@ -84,7 +81,6 @@ services:
         tag: "php53"
         mode: non-blocking
         max-buffer-size: "4m"
-        syslog-level: "error"
     networks:
       - backend  # Only accessible within the backend network (used by Nginx)
 
@@ -101,7 +97,6 @@ services:
         tag: "php73"
         mode: non-blocking
         max-buffer-size: "4m"
-        syslog-level: "error"
     networks:
       - backend  # Only accessible within the backend network
 
@@ -118,7 +113,6 @@ services:
         tag: "php81"
         mode: non-blocking
         max-buffer-size: "4m"
-        syslog-level: "error"
     networks:
       - backend  # Only accessible within the backend network
 
@@ -136,7 +130,6 @@ services:
         tag: "letsencrypt"
         mode: non-blocking
         max-buffer-size: "4m"
-        syslog-level: "error"
     networks:
       - web  # Accessible from the web network for SSL certificate validation
 
