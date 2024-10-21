@@ -3,6 +3,7 @@ services:
   nginx:
     image: nginx:alpine  # Using a lightweight version of Nginx
     container_name: nginx  # Giving the container a static name
+    restart: unless-stopped  # Restart policy
     ports:
       - "80:80"   # Exposing HTTP port
       - "443:443" # Exposing HTTPS port
@@ -25,12 +26,12 @@ services:
     networks:
       - web  # Public-facing network for handling web traffic
       - backend  # Backend network to connect with PHP services
-     restart: unless-stopped  # Restart policy
 
   # PostgreSQL Database Service
   postgres:
     image: postgres:latest  # Latest version of PostgreSQL
     container_name: postgres  # Static name for the Postgres container
+    restart: unless-stopped  # Restart policy
     environment:
       POSTGRES_USER: ${POSTGRES_USER}  # Username stored in .env file
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Password stored in .env file
@@ -46,12 +47,12 @@ services:
         syslog-level: "error"
     networks:
       - backend  # Database should only be accessible from the backend network
-    restart: unless-stopped  # Restart policy
 
   # MariaDB Database Service (alternative to MySQL)
   mariadb:
     image: mariadb:latest  # Latest version of MariaDB
     container_name: mariadb  # Static name for the MariaDB container
+    restart: unless-stopped  # Restart policy
     environment:
       MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}  # Root password stored in .env
       MYSQL_DATABASE: ${MARIADB_DATABASE}  # Initial database stored in .env
@@ -68,12 +69,13 @@ services:
         syslog-level: "error"
     networks:
       - backend  # Should only be accessible from backend services
-    restart: unless-stopped  # Restart policy
+
 
   # PHP 5.3 FPM Service
   php53:
     image: satyadeep/php-53-fpm-alpine-3.4-with-ext  # PHP 5.3 FPM with necessary extensions
     container_name: php53  # Static name for the PHP 5.3 container
+    restart: unless-stopped  # Restart policy
     volumes:
       - /var/www/public:/var/www/public  # Mount public directory to serve PHP applications
     logging:
@@ -85,12 +87,12 @@ services:
         syslog-level: "error"
     networks:
       - backend  # Only accessible within the backend network (used by Nginx)
-    restart: unless-stopped  # Restart policy
 
   # PHP 7.3 FPM Service
   php73:
     image: satyadeep/php-73-fpm-alpine-3.9-with-ext  # PHP 7.3 FPM with necessary extensions
     container_name: php73  # Static name for the PHP 7.3 container
+    restart: unless-stopped  # Restart policy
     volumes:
       - /var/www/public:/var/www/public  # Same mount point for PHP application files
     logging:
@@ -102,12 +104,12 @@ services:
         syslog-level: "error"
     networks:
       - backend  # Only accessible within the backend network
-    restart: unless-stopped  # Restart policy
 
   # PHP 8.1 FPM Service
   php81:
     image: satyadeep/php-81-fpm-alpine-with-ext  # PHP 8.1 FPM with necessary extensions
     container_name: php81  # Static name for the PHP 8.1 container
+    restart: unless-stopped  # Restart policy
     volumes:
       - /var/www/public:/var/www/public  # Same mount point for PHP application files
     logging:
@@ -119,12 +121,12 @@ services:
         syslog-level: "error"
     networks:
       - backend  # Only accessible within the backend network
-    restart: unless-stopped  # Restart policy
 
   # Let's Encrypt for SSL Certificate Management
   letsencrypt:
     image: certbot/certbot  # Using Certbot for Let's Encrypt SSL certificates
     container_name: letsencrypt  # Static name for the Let's Encrypt container
+    restart: unless-stopped  # Restart policy
     volumes:
       - ./nginx/ssl:/etc/letsencrypt  # Certificates are stored here and shared with Nginx
     entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'  # Auto-renew SSL certificates every 12 hours
@@ -137,7 +139,7 @@ services:
         syslog-level: "error"
     networks:
       - web  # Accessible from the web network for SSL certificate validation
-    restart: unless-stopped  # Restart policy
+
 
 # Networks Definition
 networks:
