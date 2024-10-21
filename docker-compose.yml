@@ -122,7 +122,7 @@ services:
   certbot:
     build:
       context: ./letsencrypt  # Path to the directory containing the Dockerfile-certbot
-      dockerfile: Dockerfile-certbot  # Use the custom Dockerfile
+      dockerfile: Dockerfile  # Use the custom Dockerfile
     container_name: letsencrypt
     volumes:
       - /var/www/private/docker/nginx/ssl:/etc/letsencrypt  # SSL certificates
