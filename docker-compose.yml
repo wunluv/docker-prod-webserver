@@ -8,10 +8,12 @@ services:
       - "80:80"   # Exposing HTTP port
       - "443:443" # Exposing HTTPS port
     volumes:
-      - /var/www/public:/var/www/public  # Mount the public directory where web apps are hosted
-      - ./nginx/conf.d:/etc/nginx/conf.d  # Nginx config files for virtual hosts/domains
-      - ./nginx/ssl:/etc/nginx/ssl  # SSL certificates for encrypted traffic (LetsEncrypt will store certs here)
-      - ./nginx/logs:/var/log/ngin  x  # Nginx logs (access/error)
+      - /var/www/public:/var/www/public  # Web content
+      - /var/www/private/docker/nginx/conf.d:/etc/nginx/conf.d  # Virtual hosts
+      - /var/www/private/docker/nginx/ssl:/etc/nginx/ssl  # SSL certificates
+      - /var/www/private/docker/nginx/logs:/var/log/nginx  # Nginx logs
+      - /var/www/private/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # Mount default nginx.conf (read-only)
+      - /var/www/private/docker/nginx/mime.types:/etc/nginx/mime.types:ro  # Optional: Mount mime.types (read-only)
     depends_on:
       - php53  # Ensure the PHP 5.3 container starts before Nginx
       - php73  # Ensure the PHP 7.x container starts before Nginx
