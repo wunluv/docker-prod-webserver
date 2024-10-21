@@ -10,7 +10,7 @@ services:
       - /var/www/public:/var/www/public  # Mount the public directory where web apps are hosted
       - ./nginx/conf.d:/etc/nginx/conf.d  # Nginx config files for virtual hosts/domains
       - ./nginx/ssl:/etc/nginx/ssl  # SSL certificates for encrypted traffic (LetsEncrypt will store certs here)
-      - ./nginx/logs:/var/log/nginx  # Nginx logs (access/error)
+      - ./nginx/logs:/var/log/ngin  x  # Nginx logs (access/error)
     depends_on:
       - php53  # Ensure the PHP 5.3 container starts before Nginx
       - php7x  # Ensure the PHP 7.x container starts before Nginx
@@ -69,7 +69,7 @@ services:
     networks:
       - backend  # Should only be accessible from backend services
     restart: unless-stopped  # Restart policy
- 
+
   # PHP 5.3 FPM Service
   php53:
     image: satyadeep/php-53-fpm-alpine-3.4-with-ext  # PHP 5.3 FPM with necessary extensions
