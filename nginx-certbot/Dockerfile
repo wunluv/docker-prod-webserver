@@ -1,10 +1,11 @@
+# This creates a docker image that runs nginx and certbot to handle SSL and serve web content
 # Start from the latest nginx alpine image
 FROM nginx:alpine
 
 # Install Certbot and its Nginx plugin
 RUN apk add --no-cache certbot certbot-nginx bash
 
-# Copy custom Nginx configuration
+# Copy custom Nginx configuration. Use this if you want to use a custom nginx.conf file
 # COPY ./nginx.conf /etc/nginx/nginx.conf
 # COPY ./conf.d /etc/nginx/conf.d
 
