@@ -13,8 +13,8 @@ services:
       - /var/www/private/docker/nginx/conf.d:/etc/nginx/conf.d  # Virtual hosts
       - /var/www/private/docker/nginx/ssl:/etc/letsencrypt  # SSL certificates
       - /var/www/private/docker/nginx/logs:/var/log/nginx  # Nginx logs
-      - /var/www/private/docker/nginx/nginx.conf:/etc/nginx/nginx.conf  # Mount default nginx.conf (read-only)
-      - /var/www/private/docker/nginx/mime.types:/etc/nginx/mime.types:ro  # Optional: Mount mime.types (read-only)
+      - /var/www/private/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:rw  # Mount default nginx.conf. We need to make this writable by certbot
+      - /var/www/private/docker/nginx/mime.types:/etc/nginx/mime.types:rw  # Optional: Mount mime.types. We need to make this writable by certbot
     security_opt:
     - apparmor=unconfined  # Disable AppArmor for this container
     depends_on:
