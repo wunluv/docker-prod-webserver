@@ -12,7 +12,7 @@ RUN apk add --no-cache certbot certbot-nginx bash
 RUN mkdir -p /etc/letsencrypt /var/www/certbot
 
 # Create a script to renew the certificates and reload Nginx
-COPY ../scripts/ /scripts/
+COPY ./scripts/ /scripts/
 RUN chmod +x /scripts/reload-nginx.sh /scripts/certbot-renew.sh
 
 # Expose ports 80 (HTTP) and 443 (HTTPS)
