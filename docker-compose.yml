@@ -40,7 +40,6 @@ services:
     working_dir: /var/www/public  # Set the working directory inside the container
     volumes:
       - /var/www/public:/var/www/public  # Mount the directory for Node.js apps
-    command: /bin/sh -c "npm install -g pnpm && pnpm start"  # Install pnpm and start the Node.js apps
     ports:
       - "3000:3000"  # Expose port 3000 for Node.js apps (adjust if you need another port)
     networks:
