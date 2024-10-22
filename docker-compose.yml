@@ -2,7 +2,7 @@ services:
   # Nginx with Certbot for handling SSL and serving web content
   nginx:
     build:
-      context: ./Dockerfile  # Path to your custom Dockerfile
+      context: ./nginx-certbot  # Path to your custom Dockerfile
     container_name: nginx
     restart: unless-stopped
     ports:
