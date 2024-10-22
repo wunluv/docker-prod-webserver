@@ -31,6 +31,27 @@ services:
       - web  # Public-facing network for handling web traffic
       - backend  # Backend network to connect with PHP services
 
+
+  # Node.js LTS (v20) Service
+  nodejs:
+    image: node:20-alpine  # Using Node.js LTS v20 with Alpine Linux
+    container_name: nodejs  # Static name for the Node.js container
+    restart: unless-stopped  # Restart policy to keep it running
+    working_dir: /var/www/public  # Set the working directory inside the container
+    volumes:
+      - /var/www/public:/var/www/public  # Mount the directory for Node.js apps
+    command: /bin/sh -c "npm install -g pnpm && pnpm start"  # Install pnpm and start the Node.js apps
+    ports:
+      - "3000:3000"  # Expose port 3000 for Node.js apps (adjust if you need another port)
+    networks:
+      - web  # Public-facing network for handling web traffic
+    logging:
+      driver: journald  # Use systemd's journald for logging
+      options:
+        tag: "nodejs"
+        mode: non-blocking
+        max-buffer-size: "4m"
+
   # PostgreSQL Database Service
   postgres:
     image: postgres:latest  # Latest version of PostgreSQL
