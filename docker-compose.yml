@@ -63,14 +63,15 @@ services:
       MYSQL_PASSWORD: ${MARIADB_PASSWORD}  # Password for non-root user stored in .env
     volumes:
       - /var/www/private/mariadb:/var/lib/mysql  # Persistent data storage for MariaDB
+    networks:
+      - backend  # Should only be accessible from backend services
     logging:
       driver: journald
       options:
         tag: "mariadb"
         mode: non-blocking
         max-buffer-size: "4m"
-    networks:
-      - backend  # Should only be accessible from backend services
+
 
 
   # PHP 5.3 FPM Service
@@ -126,4 +127,4 @@ networks:
   web:
     driver: bridge  # Public-facing network for web traffic
   backend:
-    driver: bridge  # Private network for backend communication (PHP, databases)
+    external: true  # Declare the backend network as external
