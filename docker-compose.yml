@@ -63,6 +63,8 @@ services:
       MYSQL_PASSWORD: ${MARIADB_PASSWORD}  # Password for non-root user stored in .env
     volumes:
       - /var/www/private/mariadb:/var/lib/mysql  # Persistent data storage for MariaDB
+    ports:
+      - "3306:3306"  # Expose MariaDB on port 3306 to the host
     networks:
       - backend  # Should only be accessible from backend services
     logging:
