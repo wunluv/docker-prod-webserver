@@ -42,14 +42,10 @@ services:
       - /var/www/public:/var/www/public  # Mount the directory for Node.js apps
     ports:
       - "3000:3000"  # Expose port 3000 for Node.js apps (adjust if you need another port)
+    command: /bin/sh -c "while true; do sleep 30; done"  # Simple command to keep the container running
     networks:
       - web  # Public-facing network for handling web traffic
-    logging:
-      driver: journald  # Use systemd's journald for logging
-      options:
-        tag: "nodejs"
-        mode: non-blocking
-        max-buffer-size: "4m"
+
 
   # PostgreSQL Database Service
   postgres:
