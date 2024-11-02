@@ -3,8 +3,7 @@ services:
     image: ghost:5.97.0-alpine  # Using Ghost version 5.97.0
     container_name: ghost_oneplusone
     restart: unless-stopped
-    env_file:
-      - ./.env_ghost
+    env_file: "./.env_ghost"
     ports:
       - "2368:2368"  # GhostCMS default port
     environment:
