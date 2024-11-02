@@ -4,7 +4,7 @@ services:
     container_name: ghost_oneplusone
     restart: unless-stopped
     env_file:
-      - .env_ghost
+      - ./.env_ghost
     ports:
       - "2368:2368"  # GhostCMS default port
     environment:
