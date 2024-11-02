@@ -18,18 +18,6 @@ services:
       - "4321:4321"  # Expose the AstroJS app on port 4321
     networks:
       - backend  # Use the shared backend network
-    depends_on:
-      - ghost_oneplusone: # Ensure Ghost is running before starting Astro
-          condition: service_started
-hooks:
-  up:
-    # Copy the custom Nginx configuration to the container
-    - command: cp ../nginx/one.mojah2.mojahmedia.conf /var/www/private/nginx/conf.d
-    - command: docker-compose exec nginx nginx -s reload
-  down:
-    # Remove the custom Nginx configuration
-    - command: rm /var/www/private/nginx/conf.d/one.mojah2.mojahmedia.conf
-    - command: docker-compose exec nginx nginx -s reload
 
 networks:
   backend:
