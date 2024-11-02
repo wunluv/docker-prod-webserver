@@ -16,8 +16,6 @@ services:
       - /var/www/public/oneplusone/ghost:/var/lib/ghost/content  # Mount Ghost content directory
     networks:
       - backend  # Use the shared backend network
-    depends_on:
-      - mariadb  # Ensure MariaDB is running before starting Ghost
 
 networks:
   backend:
