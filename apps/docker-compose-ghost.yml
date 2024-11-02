@@ -21,19 +21,7 @@ services:
     depends_on:
       mariadb:  # Ensure MariaDB is running before starting Ghost
         condition: service_started
-  nginx:
-
-  mariadb:
-    image: mariadb:latest  # Use the latest version of MariaDB
-    container_name: mariadb
-    restart: unless-stopped  # Restart the container automatically unless explicitly stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}  # Set MariaDB root password from environment variables
-      MYSQL_DATABASE: ${MARIADB_DATABASE}  # Set initial MariaDB database from environment variables
-      MYSQL_USER: ${MARIADB_USER}  # Set non-root MariaDB user from environment variables
-      MYSQL_PASSWORD: ${MARIADB_PASSWORD}  # Set password for non-root user from environment variables
-    volumes:
-      - /var/www/private/mariadb:/var/lib/mysql  # Mount directory for persistent data storage
+ # Mount directory for persistent data storage
 hooks:
   up:
     # Copy the custom Nginx configuration to the container
