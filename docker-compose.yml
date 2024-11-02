@@ -1,26 +1,23 @@
 services:
-  # Nginx with Certbot for handling SSL and serving web content
+# Nginx with Certbot for handling SSL and serving web content
   nginx:
     build:
       context: ./nginx-certbot  # Path to your custom Dockerfile
     container_name: nginx
-    restart: unless-stopped
+    restart: unless-stopped  # Restart the container automatically unless it is explicitly stopped
     ports:
-      - "80:80" # exposing HTTP port
-      - "443:443" # exposing HTTPS port
+      - "80:80"  # Expose HTTP port
+      - "443:443"  # Expose HTTPS port
     volumes:
-      - /var/www/public:/var/www/public  # Web content
-      - /var/www/private/docker/nginx/conf.d:/etc/nginx/conf.d  # Virtual hosts
-      - /var/www/private/docker/nginx/ssl:/etc/letsencrypt  # SSL certificates
-      - /var/www/private/docker/nginx/logs:/var/log/nginx  # Nginx logs
-      - /var/www/private/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:rw  # Mount default nginx.conf. We need to make this writable by certbot
-      - /var/www/private/docker/nginx/mime.types:/etc/nginx/mime.types:rw  # Optional: Mount mime.types. We need to make this writable by certbot
+      - /var/www/public:/var/www/public  # Mount public directory for web content
+      - /var/www/private/nginx/conf.d:/etc/nginx/conf.d  # Mount virtual host configuration files
+      - /var/www/private/nginx/ssl:/etc/letsencrypt  # Mount SSL certificates managed by Certbot
+      - /var/www/private/nginx/logs:/var/log/nginx  # Mount directory for Nginx logs
+      - /var/www/private/nginx/nginx.conf:/etc/nginx/nginx.conf:rw  # Mount the default nginx.conf file and make it writable for Certbot
+      - /var/www/private/nginx/mime.types:/etc/nginx/mime.types:rw  # Mount mime.types file and make it writable for Certbot
+      - /var/www/private/nginx/cache:/var/cache/nginx  # Mount directory for Nginx cache
     security_opt:
-    - apparmor=unconfined  # Disable AppArmor for this container
-    depends_on:
-      - php53  # Ensure the PHP 5.3 container starts before Nginx
-      - php73  # Ensure the PHP 7.x container starts before Nginx
-      - php81  # Ensure the PHP 8.x container starts before Nginx
+      - apparmor=unconfined  # Disable AppArmor for this container to allow more flexibility
     logging:
       driver: journald  # Use systemd's journald for logging
       options:
@@ -33,96 +30,112 @@ services:
 
   # PostgreSQL Database Service
   postgres:
-    image: postgres:latest  # Latest version of PostgreSQL
-    container_name: postgres  # Static name for the Postgres container
-    restart: unless-stopped  # Restart policy
+    image: postgres:latest  # Use the latest version of PostgreSQL
+    container_name: postgres
+    restart: unless-stopped  # Restart the container automatically unless explicitly stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}  # Username stored in .env file
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Password stored in .env file
-      POSTGRES_DB: ${POSTGRES_DB}  # Database name stored in .env file
+      POSTGRES_USER: ${POSTGRES_USER}  # Set PostgreSQL username from environment variables
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Set PostgreSQL password from environment variables
+      POSTGRES_DB: ${POSTGRES_DB}  # Set PostgreSQL database name from environment variables
     volumes:
-      - /var/www/private/postgre:/var/lib/postgresql/data  # Persistent data storage for the Postgres database
+      - /var/www/private/postgre:/var/lib/postgresql/data  # Mount directory for persistent data storage
     logging:
       driver: journald
       options:
-        tag: "postgres"  # Tag logs for easy identification
+        tag: "postgres"  # Tag the logs to easily identify them
         mode: non-blocking
         max-buffer-size: "4m"
     networks:
-      - backend  # Database should only be accessible from the backend network
+      - backend  # Only accessible from backend services
 
-  # MariaDB Database Service (alternative to MySQL)
+  # MariaDB Database Service
   mariadb:
-    image: mariadb:latest  # Latest version of MariaDB
-    container_name: mariadb  # Static name for the MariaDB container
-    restart: unless-stopped  # Restart policy
+    image: mariadb:latest  # Use the latest version of MariaDB
+    container_name: mariadb
+    restart: unless-stopped  # Restart the container automatically unless explicitly stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}  # Root password stored in .env
-      MYSQL_DATABASE: ${MARIADB_DATABASE}  # Initial database stored in .env
-      MYSQL_USER: ${MARIADB_USER}  # Non-root user stored in .env
-      MYSQL_PASSWORD: ${MARIADB_PASSWORD}  # Password for non-root user stored in .env
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}  # Set MariaDB root password from environment variables
+      MYSQL_DATABASE: ${MARIADB_DATABASE}  # Set initial MariaDB database from environment variables
+      MYSQL_USER: ${MARIADB_USER}  # Set non-root MariaDB user from environment variables
+      MYSQL_PASSWORD: ${MARIADB_PASSWORD}  # Set password for non-root user from environment variables
     volumes:
-      - /var/www/private/mariadb:/var/lib/mysql  # Persistent data storage for MariaDB
+      - /var/www/private/mariadb:/var/lib/mysql  # Mount directory for persistent data storage
+
     ports:
-      - "3306:3306"  # Expose MariaDB on port 3306 to the host
+      - "3306:3306"  # Expose MariaDB on port 3306
     networks:
-      - backend  # Should only be accessible from backend services
+      - backend  # Only accessible from backend services
     logging:
       driver: journald
       options:
-        tag: "mariadb"
+        tag: "mariadb"  # Tag the logs to easily identify them
         mode: non-blocking
         max-buffer-size: "4m"
-
-
 
   # PHP 5.3 FPM Service
   php53:
-    image: satyadeep/php-53-fpm-alpine-3.4-with-ext  # PHP 5.3 FPM with necessary extensions
-    container_name: php53  # Static name for the PHP 5.3 container
-    restart: unless-stopped  # Restart policy
+    image: satyadeep/php-53-fpm-alpine-3.4-with-ext  # Use PHP 5.3 FPM with necessary extensions
+    container_name: php53
+    restart: unless-stopped  # Restart the container automatically unless explicitly stopped
     volumes:
       - /var/www/public:/var/www/public  # Mount public directory to serve PHP applications
     logging:
       driver: journald
       options:
-        tag: "php53"
+        tag: "php53"  # Tag the logs to easily identify them
         mode: non-blocking
         max-buffer-size: "4m"
     networks:
-      - backend  # Only accessible within the backend network (used by Nginx)
+      - backend  # Only accessible from backend services
 
   # PHP 7.3 FPM Service
   php73:
-    image: satyadeep/php-73-fpm-alpine-3.9-with-ext  # PHP 7.3 FPM with necessary extensions
-    container_name: php73  # Static name for the PHP 7.3 container
-    restart: unless-stopped  # Restart policy
+    image: satyadeep/php-73-fpm-alpine-3.9-with-ext  # Use PHP 7.3 FPM with necessary extensions
+    container_name: php73
+    restart: unless-stopped  # Restart the container automatically unless explicitly stopped
     volumes:
-      - /var/www/public:/var/www/public  # Same mount point for PHP application files
+      - /var/www/public:/var/www/public  # Mount public directory to serve PHP applications
     logging:
       driver: journald
       options:
-        tag: "php73"
+        tag: "php73"  # Tag the logs to easily identify them
         mode: non-blocking
         max-buffer-size: "4m"
     networks:
-      - backend  # Only accessible within the backend network
+      - backend  # Only accessible from backend services
 
   # PHP 8.1 FPM Service
   php81:
-    image: satyadeep/php-81-fpm-alpine-with-ext  # PHP 8.1 FPM with necessary extensions
-    container_name: php81  # Static name for the PHP 8.1 container
-    restart: unless-stopped  # Restart policy
+    image: satyadeep/php-81-fpm-alpine-with-ext  # Use PHP 8.1 FPM with necessary extensions
+    container_name: php81
+    restart: unless-stopped  # Restart the container automatically unless explicitly stopped
     volumes:
-      - /var/www/public:/var/www/public  # Same mount point for PHP application files
+      - /var/www/public:/var/www/public  # Mount public directory to serve PHP applications
+      - /var/www/private/config/php-8-overrides.ini:/usr/local/etc/php/conf.d/overrides.ini:ro  # Add custom overrides to PHP configuration
     logging:
       driver: journald
       options:
-        tag: "php81"
+        tag: "php81"  # Tag the logs to easily identify them
         mode: non-blocking
         max-buffer-size: "4m"
     networks:
-      - backend  # Only accessible within the backend network
+      - backend  # Only accessible from backend services
+
+  # Redis Cache Service
+  redis:
+    image: redis:alpine  # Use Redis with Alpine Linux for a lightweight image
+    container_name: redis
+    restart: unless-stopped  # Restart the container automatically unless explicitly stopped
+    volumes:
+      - /var/www/private/redis:/data  # Mount directory for persistent Redis storage
+    logging:
+      driver: journald
+      options:
+        tag: "redis"  # Tag the logs to easily identify them
+        mode: non-blocking
+        max-buffer-size: "4m"
+    networks:
+      - backend  # Only accessible from backend services
 
 # Networks Definition
 networks:
@@ -130,3 +143,4 @@ networks:
     driver: bridge  # Public-facing network for web traffic
   backend:
     external: true  # Declare the backend network as external
+
