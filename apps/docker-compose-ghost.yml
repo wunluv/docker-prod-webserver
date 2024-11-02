@@ -10,9 +10,9 @@ services:
       url: "https://ghost.mojah2.mojahmedia.net"  # Set your Ghost URL
       database__client: mysql  # Specify MariaDB as the database client
       database__connection__host: mariadb  # MariaDB service name
-      database__connection__user: ${GHOST_DB_USER}  # Set in .env file
-      database__connection__password: ${GHOST_DB_PASSWORD}  # Set in .env file
-      database__connection__database: ${GHOST_DB_NAME}  # Set in .env file
+      database__connection__user: ghostuser  # Set in .env file
+      database__connection__password: one_plus_13427  # Set in .env file
+      database__connection__database: ghost  # Set in .env file
     volumes:  # Mount directory for persistent data storage
       - /var/www/public/oneplusone/ghost:/var/lib/ghost/content  # Mount Ghost content directory
     networks:
@@ -20,15 +20,6 @@ services:
     depends_on:
       mariadb:  # Ensure MariaDB is running before starting Ghost
         condition: service_started
-
-    post-start:
-        # Copy the custom Nginx configuration to the container
-        - command: cp ../nginx/ghost.mojah2.mojahmedia.conf /var/www/private/nginx/conf.d
-        - command: docker-compose exec nginx nginx -s reload
-    pre-stop:
-        # Remove the custom Nginx configuration
-        - command: rm /var/www/private/nginx/conf.d/one.mojah2.mojahmedia.conf
-        - command: docker-compose exec nginx nginx -s reload
 
 networks:
   backend:
