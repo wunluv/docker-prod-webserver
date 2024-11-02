@@ -17,7 +17,7 @@ services:
     networks:
       - backend  # Use the shared backend network
     depends_on:
-      mariadb:  # Ensure MariaDB is running before starting Ghost
+      - mariadb  # Ensure MariaDB is running before starting Ghost
 
 networks:
   backend:
