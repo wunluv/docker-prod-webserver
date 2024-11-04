@@ -29,26 +29,26 @@ services:
       - backend  # Backend network to connect with PHP services
 
   # PostgreSQL Database Service
-  postgres:
-    image: postgres:latest  # Use the latest version of PostgreSQL
-    container_name: postgres
-    restart: unless-stopped  # Restart the container automatically unless explicitly stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}  # Set PostgreSQL username from environment variables
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Set PostgreSQL password from environment variables
-      POSTGRES_DB: ${POSTGRES_DB}  # Set PostgreSQL database name from environment variables
-    volumes:
-      - /var/www/private/postgre:/var/lib/postgresql/data  # Mount directory for persistent data storage
-    logging:
-      driver: journald
-      options:
-        tag: "postgres"  # Tag the logs to easily identify them
-        mode: non-blocking
-        max-buffer-size: "4m"
-    networks:
-      - backend  # Only accessible from backend services
+  #postgres:
+  #  image: postgres:latest  # Use the latest version of PostgreSQL
+  #  container_name: postgres
+  #  restart: unless-stopped  # Restart the container automatically unless explicitly stopped
+  #  environment:
+  #    POSTGRES_USER: ${POSTGRES_USER}  # Set PostgreSQL username from environment variables
+  #    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Set PostgreSQL password from environment variables
+  #    POSTGRES_DB: ${POSTGRES_DB}  # Set PostgreSQL database name from environment variables
+  #  volumes:
+  #    - /var/www/private/postgre:/var/lib/postgresql/data  # Mount directory for persistent data storage
+  #  logging:
+  #    driver: journald
+  #    options:
+  #      tag: "postgres"  # Tag the logs to easily identify them
+  #      mode: non-blocking
+  #      max-buffer-size: "4m"
+  #  networks:
+  #    - backend  # Only accessible from backend services
 
-  # MariaDB Database Service
+  # MYSQL Database Service
   mysql:
     image: mysql:8.0  # Use MySQL version 8.0
     container_name: mysql
