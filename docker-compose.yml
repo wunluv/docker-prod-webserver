@@ -49,26 +49,25 @@ services:
       - backend  # Only accessible from backend services
 
   # MariaDB Database Service
-  mariadb:
-    image: mariadb:latest  # Use the latest version of MariaDB
-    container_name: mariadb
+  mysql:
+    image: mysql:8.0  # Use MySQL version 8.0
+    container_name: mysql
     restart: unless-stopped  # Restart the container automatically unless explicitly stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}  # Set MariaDB root password from environment variables
-      MYSQL_DATABASE: ${MARIADB_DATABASE}  # Set initial MariaDB database from environment variables
-      MYSQL_USER: ${MARIADB_USER}  # Set non-root MariaDB user from environment variables
-      MYSQL_PASSWORD: ${MARIADB_PASSWORD}  # Set password for non-root user from environment variables
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # Set MySQL root password from environment variables
+      MYSQL_DATABASE: ${MYSQL_DATABASE}  # Set initial MySQL database from environment variables
+      MYSQL_USER: ${MYSQL_USER}  # Set non-root MySQL user from environment variables
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}  # Set password for non-root user from environment variables
     volumes:
-      - /var/www/private/mariadb:/var/lib/mysql  # Mount directory for persistent data storage
-
+      - /var/www/private/mysql:/var/lib/mysql  # Mount directory for persistent data storage
     ports:
-      - "3306:3306"  # Expose MariaDB on port 3306
+      - "3306:3306"  # Expose MySQL on port 3306
     networks:
       - backend  # Only accessible from backend services
     logging:
       driver: journald
       options:
-        tag: "mariadb"  # Tag the logs to easily identify them
+        tag: "mysql"  # Tag the logs to easily identify them
         mode: non-blocking
         max-buffer-size: "4m"
 
