@@ -8,7 +8,7 @@ services:
     environment:
       url: "https://ghost.mojah2.mojahmedia.net"  # Set your Ghost URL
       database__client: mysql  # Specify MariaDB as the database client
-      database__connection__host: mariadb  # MariaDB service name
+      database__connection__host: mysql  # MariaDB service name
       database__connection__user: ${GHOST_DB_USER}  # Set in .env file
       database__connection__password: ${GHOST_DB_PASSWORD}  # Set in .env file
       database__connection__database: ${GHOST_DB_NAME}  # Set in .env file
