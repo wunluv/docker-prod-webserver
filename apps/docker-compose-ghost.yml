@@ -17,7 +17,7 @@ services:
     volumes:  # Mount directory for persistent data storage
       - /var/www/public/oneplusone/ghost:/var/lib/ghost/content  # Mount Ghost content directory
       - /var/www/private/docker/apps/config.production.json:/var/lib/ghost/config.production.json:ro  # Mount Ghost configuration file
-      - /var/cache/nginx:/var/cache/nginx  # Mount cache path for persistence
+
     networks:
       - backend  # Use the shared backend network
 
