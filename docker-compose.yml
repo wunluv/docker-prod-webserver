@@ -124,6 +124,11 @@ services:
   redis:
     image: redis:alpine  # Use Redis with Alpine Linux for a lightweight image
     container_name: redis
+    ports:
+      - "6379:6379"  # Expose Redis on port 6379
+    sysctls:
+      - net.core.somaxconn=511
+      - vm.overcommit_memory=1
     restart: unless-stopped  # Restart the container automatically unless explicitly stopped
     volumes:
       - /var/www/private/redis:/data  # Mount directory for persistent Redis storage
