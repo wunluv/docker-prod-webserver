@@ -12,6 +12,8 @@ services:
       database__connection__user: ${GHOST_DB_USER}  # Set in .env file
       database__connection__password: ${GHOST_DB_PASSWORD}  # Set in .env file
       database__connection__database: ${GHOST_DB_NAME}  # Set in .env file
+      cache__client: redis
+      cache__connection__host: redis
     volumes:  # Mount directory for persistent data storage
       - /var/www/public/oneplusone/ghost:/var/lib/ghost/content  # Mount Ghost content directory
       - /var/www/private/docker/apps/config.production.json:/var/lib/ghost/config.production.json:ro  # Mount Ghost configuration file
