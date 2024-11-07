@@ -125,7 +125,7 @@ services:
     image: redis:alpine  # Use Redis with Alpine Linux for a lightweight image
     container_name: redis
     ports:
-      - "6379:6379"  # Expose Redis on port 6379
+      - "127.0.0.1:6379:6379"  # Expose Redis on port 6379
     sysctls:
       - net.core.somaxconn=511
     restart: unless-stopped  # Restart the container automatically unless explicitly stopped
