@@ -60,7 +60,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}  # Set password for non-root user from environment variables
     volumes:
       - /var/www/private/mysql:/var/lib/mysql  # Mount directory for persistent data storage
-      - /var/www/private/my.cnf:/etc/my.cnf:ro  # Mount MySQL configuration file
+      - /var/www/private/docker/my.cnf:/etc/my.cnf:ro  # Mount MySQL configuration file
     ports:
       - "3306:3306"  # Expose MySQL on port 3306
     networks:
