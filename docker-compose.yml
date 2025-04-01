@@ -72,6 +72,28 @@ services:
         mode: non-blocking
         max-buffer-size: "4m"
 
+mariadb:
+  image: mariadb:latest
+  container_name: mariadb
+  restart: unless-stopped
+  environment:
+    MYSQL_ROOT_PASSWORD: ${MARIA_DB_ROOT_PASSWORD}
+    MYSQL_DATABASE: ${MARIADB_NAME}
+    MYSQL_USER: ${MARIADB_USER}
+    MYSQL_PASSWORD: ${MARIADB_PASSWORD}
+  volumes:
+    - /var/www/private/mariadb:/var/lib/mysql
+  logging:
+    driver: journald
+    options:
+      tag: "mariadb"
+      mode: non-blocking
+      max-buffer-size: "4m"
+  networks:
+    backend:
+      aliases:
+        - mariadb
+
   # PHP 5.3 FPM Service
   php53:
     image: satyadeep/php-53-fpm-alpine-3.4-with-ext  # Use PHP 5.3 FPM with necessary extensions
